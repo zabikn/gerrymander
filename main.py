@@ -47,7 +47,7 @@ def getRiverPoints():
 # OUTPUTS: pointmatrix - a 2d list of boolean values where row refers to latitude, col refers to longitude
 #                        if pointmatrix[row][col] == 1, coordinate is a part of a state line or river
 #                        if pointmatrix[row][col] == 0, coordinate is not part of a state line or river
-def createCoordMatrix(statepoints):
+def createCoordMatrix(statepoints, riverpoints):
     # I know this is very space inefficient and there is probably a better ways to do this with a hashmap or something
     # but the constant time access did speed up the process. So here we initialize the enormous 2d list
     rows, cols = (360*10**5,180*10**5)
@@ -61,11 +61,11 @@ def createCoordMatrix(statepoints):
         #print(pt)
         pointmatrix[lat][long] = 1
     #iterate thru all riverpoints, set all coords where a river vertice exists to 1 (very slow/long list)
-    # for pt in riverpoints:
-    #     # shift over and multiply by 10^5 to offset rounding
-    #     lat = int((pt[0] + 180) * 10**5)
-    #     long = int(pt[1] * 10**5)
-    #     pointmatrix[lat][long] = 1
+    for pt in riverpoints:
+        # shift over and multiply by 10^5 to offset rounding
+        lat = int((pt[0] + 180) * 10**5)
+        long = int(pt[1] * 10**5)
+        pointmatrix[lat][long] = 1
     #retunr 2d list
     return pointmatrix
 
@@ -103,7 +103,7 @@ def drawDistricts(pointmatrix):
     #iterate thru all districts
     for rec in districts.shapeRecords():
         # calculate CRUDE grayscale value (1 = black, 0 = white). Divide by ugly crud number I used to achieve a grayscale
-        grayscale = 1 - countVertices(rec.shape, pointmatrix) / 1000000
+        grayscale = 1 - countVertices(rec.shape, pointmatrix) / 10000
         color = str(grayscale)
         listx = []
         listy = []
@@ -177,8 +177,8 @@ def promptForState():
 # main function
 def main():
     state_points = getStatePoints()
-    #river_points = getRiverPoints()
-    point_matrix = createCoordMatrix(state_points)
+    river_points = getRiverPoints()
+    point_matrix = createCoordMatrix(state_points, riverpoints)
     drawMap(point_matrix)
 
 # necessary for some reason lol
