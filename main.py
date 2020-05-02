@@ -178,7 +178,7 @@ def promptForState():
 def main():
     state_points = getStatePoints()
     river_points = getRiverPoints()
-    point_matrix = createCoordMatrix(state_points, riverpoints)
+    point_matrix = createCoordMatrix(state_points, river_points)
     drawMap(point_matrix)
 
 # necessary for some reason lol
