@@ -28,5 +28,7 @@ https://www.arcgis.com/home/item.html?id=8206e517c2264bb39b4a0780462d5be1
 
 ## Other Notes
  I am skeptical of using the US rivers data file as it is very large and might include too many small streams so currently this is commented out and only state borders are being used.
+ 
+ pip install PyShp
 
 
