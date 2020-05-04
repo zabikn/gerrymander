@@ -14,6 +14,6 @@ dist/*
 .idea/vcs.xml
 
 .gitignore
-venv/
 
+venv/*
 

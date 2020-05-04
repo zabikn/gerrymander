@@ -2,6 +2,7 @@
 
 # Python Standard Library Modules
 import csv
+from shapely.geometry import Polygon
 import argparse
 import matplotlib.pyplot as plt
 import shapefile
@@ -113,31 +114,46 @@ def countVertices(shape, pointmatrix):
 # FUNCTIONALITY:
 #          For each district shape. A grayscale value is calculated (VERY CRUDELY) and is used to fill each shape
 #
-def drawDistricts(pointmatrix):
+def drawDistricts():
     # open US districts shapefile
     file = "data/tl_2018_us_cd116.shp"
     districts = shapefile.Reader(file)
-
-    maxVertices = max(countVertices(rec.shape, pointmatrix) for rec in districts.shapeRecords())
-    # print(maxVertices)
+    # maxVertices = max(countVertices(rec.shape, pointmatrix) for rec in districts.shapeRecords())
 
     #iterate thru all districts
     for rec in districts.shapeRecords():
         # calculate CRUDE grayscale value (0 = black, 1 = white). Divide by ugly crud number I used to achieve a grayscale
-        # black is more gerrymandered
-        grayscale = 1 - countVertices(rec.shape, pointmatrix) / maxVertices #10000
-        grayscale = min(grayscale, 1.0)
-        grayscale = max(grayscale, 0.0)
-        color = str(grayscale)
-        listx = []
-        listy = []
-        for x, y in rec.shape.points:
-            listx.append(x)
-            listy.append(y)
+
+        # vertice method commented out
+            # black is more gerrymandered
+            # grayscale = 1 - countVertices(rec.shape, pointmatrix) / maxVertices #10000
+            # grayscale = min(grayscale, 1.0)
+            # grayscale = max(grayscale, 0.0)
+            #color = str(grayscale)
+
+        #area/perim method
+        shape = Polygon(rec.shape.points)
+        shp_area = shape.area
+        shp_perim = shape.length
+
+        ratio = shp_perim / shp_area
+        greyscale = ratio / 20
+        #round down
+        if greyscale > 1:
+            greyscale = 1.0
+        #invert colors
+        greyscale = 1 - greyscale
+
+        # get points to plot
+        x = [i[0] for i in rec.shape.points[:]]
+        y = [i[1] for i in rec.shape.points[:]]
+
         # draw with whiteborders
-        plt.plot(listx, listy, 'w', linewidth=0.2)
+        plt.plot(x, y, 'w', linewidth=0.2)
+
         #fill district with grayscale value
-        plt.fill(listx, listy, color)
+        color = str(greyscale)
+        plt.fill(x,y, color)
 
 # I dont use this function. It is meant to draw the state lines and it sorta works but some state come out wonky
 def drawStates():
@@ -158,23 +174,26 @@ def drawStates():
 # FUNCTIONALITY:
 #               Draw the map using matplotlib
 #
-def drawMap(pointmatrix, args):
+# Previously was "drawMap(pointmatrix, args):"
+def drawMap(args):
     #output with matplotlib
         dimensions = getDimensions(args.region)
         # dimensions of popup plot window
         plt.figure(figsize=[12, 7])
         # set background color to gray
-        plt.gca().set_facecolor('0.4')
+        plt.gca().set_facecolor("0.5")
         # set scale to mutiples of 10?
         plt.plot(range(0, 10))
         # set coord ranges
         xmin, xmax = dimensions[0]
         ymin, ymax = dimensions[1]
-        # add and subtract 1 to each direction to give a little buffer around the ranges we are looking at
+
+        #this value will eventually be used to name pdf file
         plt.title(args.output)
+        # add and subtract 1 to each direction to give a little buffer around the ranges we are looking at
         plt.xlim(round(xmin - 1), round(xmax + 1))
         plt.ylim(round(ymin - 1), round(ymax + 1))
-        drawDistricts(pointmatrix)
+        drawDistricts()
         plt.show()
 
 # FUNCTIONALITY: I really crudely made the project prompt the user to enter state name, abreviation, or empty string to zoom
@@ -212,10 +231,11 @@ def main():
     parser.set_defaults()
     args = parser.parse_args()
     # logic
-    state_points = getStatePoints()
+    #state_points = getStatePoints()
     #river_points = getRiverPoints()
-    point_matrix = createCoordMatrix2(state_points)
-    drawMap(point_matrix, args)
+    #point_matrix = createCoordMatrix2(state_points)
+    drawMap(args)
+
 
 # necessary for some reason lol
 if __name__ == "__main__":
