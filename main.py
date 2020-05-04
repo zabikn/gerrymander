@@ -36,6 +36,22 @@ def getRiverPoints():
             riverpoints.append((round(pt[0], 5), round(pt[1], 5)))
     return riverpoints
 
+#  createCoordMatrix without the rivers
+def createCoordMatrix2(statepoints):
+    # I know this is very space inefficient and there is probably a better ways to do this with a hashmap or something
+    # but the constant time access did speed up the process. So here we initialize the enormous 2d list
+    rows, cols = (360*10**5,180*10**5)
+    pointmatrix = [[0] * cols] * rows
+
+    #iterate thru all statepoints, set all coords where a state vertice exists to 1
+    for pt in statepoints:
+        # shift over and multiply by 10^4 to offset rounding
+        lat = int((pt[0] + 180) * 10**5)
+        long = int(pt[1] * 10**5)
+        #print(pt)
+        pointmatrix[lat][long] = 1
+    return pointmatrix
+
 # INPUTS:  statepoints - a list of points representing vertices of state borders
 #          riverpoints - a list of points representing vertices along major US rivers (very long)
 # FUNCTIONALITY:
@@ -100,10 +116,17 @@ def drawDistricts(pointmatrix):
     # open US districts shapefile
     file = "data/tl_2018_us_cd116.shp"
     districts = shapefile.Reader(file)
+
+    maxVertices = max(countVertices(rec.shape, pointmatrix) for rec in districts.shapeRecords())
+    # print(maxVertices)
+
     #iterate thru all districts
     for rec in districts.shapeRecords():
-        # calculate CRUDE grayscale value (1 = black, 0 = white). Divide by ugly crud number I used to achieve a grayscale
-        grayscale = 1 - countVertices(rec.shape, pointmatrix) / 10000
+        # calculate CRUDE grayscale value (0 = black, 1 = white). Divide by ugly crud number I used to achieve a grayscale
+        # black is more gerrymandered
+        grayscale = 1 - countVertices(rec.shape, pointmatrix) / maxVertices #10000
+        grayscale = min(grayscale, 1.0)
+        grayscale = max(grayscale, 0.0)
         color = str(grayscale)
         listx = []
         listy = []
@@ -177,8 +200,9 @@ def promptForState():
 # main function
 def main():
     state_points = getStatePoints()
-    river_points = getRiverPoints()
-    point_matrix = createCoordMatrix(state_points, river_points)
+    # river_points = getRiverPoints()
+    # point_matrix = createCoordMatrix(state_points, river_points)
+    point_matrix = createCoordMatrix2(state_points)
     drawMap(point_matrix)
 
 # necessary for some reason lol

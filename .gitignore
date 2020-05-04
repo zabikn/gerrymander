@@ -1,3 +1,6 @@
 data/*
 rivers/*
 # state_shapes/*
+build/*
+__pycache__/*
+dist/*
