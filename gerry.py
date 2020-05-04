@@ -1,7 +1,8 @@
+#! /usr/bin/env python
+
 # Python Standard Library Modules
 import csv
-from pathlib import Path
-from zipfile import ZipFile
+import argparse
 import matplotlib.pyplot as plt
 import shapefile
 
@@ -157,10 +158,9 @@ def drawStates():
 # FUNCTIONALITY:
 #               Draw the map using matplotlib
 #
-def drawMap(pointmatrix):
+def drawMap(pointmatrix, args):
     #output with matplotlib
-        dimensions = promptForState()
-        print('dims received')
+        dimensions = getDimensions(args.region)
         # dimensions of popup plot window
         plt.figure(figsize=[12, 7])
         # set background color to gray
@@ -171,6 +171,7 @@ def drawMap(pointmatrix):
         xmin, xmax = dimensions[0]
         ymin, ymax = dimensions[1]
         # add and subtract 1 to each direction to give a little buffer around the ranges we are looking at
+        plt.title(args.output)
         plt.xlim(round(xmin - 1), round(xmax + 1))
         plt.ylim(round(ymin - 1), round(ymax + 1))
         drawDistricts(pointmatrix)
@@ -179,10 +180,12 @@ def drawMap(pointmatrix):
 # FUNCTIONALITY: I really crudely made the project prompt the user to enter state name, abreviation, or empty string to zoom
 #                the graph on different areas if necessary
 # OUTPUT:        A Pair of Pairs in format ((xmin, xmax),(ymin,ymax))
-def promptForState():
-    state = input('Enter a state name, abbreviation, or hit enter for full view: ').lower()
+# FUNCTIONALITY: I made the project take cmd line args to enter state name, abreviation, or empty string to zoom
+#                the graph on different areas if necessary
+# OUTPUT:        A Pair of Pairs in format ((xmin, xmax),(ymin,ymax))
+def getDimensions(region):
     # if empty string input, show entire continental US
-    if state == '':
+    if region is None:
         #defaults for continental US
         return ((-130, -50), (24, 50))
     # otherwise see if the input refers to a state in csv file. If so, use corresponding dimensions
@@ -191,21 +194,32 @@ def promptForState():
             csv_reader = csv.DictReader(csv_file)
             #iterate thru csv file to search for match
             for row in csv_reader:
-                if row["STUSPS"].lower() == state or row["NAME"].lower() == state:
-                    print('dim: ', ((row["xmin"],row["xmax"]),(row["ymin"],row["ymax"])))
+                if row["STUSPS"].lower() == region or row["NAME"].lower() == region:
                     return ((float(row["xmin"]),float(row["xmax"])),(float(row["ymin"]),float(row["ymax"])))
             # if invalid input, reprompt
-            promptForState()
+    raise ValueError("This state name or abbreviation does not exist")
+
 
 # main function
 def main():
+    # argument parsing
+    parser = argparse.ArgumentParser(
+        description="Generate pdf map displaying different levels of gerrymandering in US congressional districts")
+    region_string = "(Optional) The region to be represented in the map. Can be state name or abbreviation"
+    parser.add_argument("-region", help=region_string, dest="region", type=str, required=False)
+    output_string = "(Optional) The name of the map pdf file to be created. Default is MyMap.pdf"
+    parser.add_argument("-mapname", help=output_string, dest="output", type=str, default="MyMap.pdf")
+    parser.set_defaults()
+    args = parser.parse_args()
+    # logic
     state_points = getStatePoints()
-    # river_points = getRiverPoints()
-    # point_matrix = createCoordMatrix(state_points, river_points)
+    #river_points = getRiverPoints()
     point_matrix = createCoordMatrix2(state_points)
-    drawMap(point_matrix)
+    drawMap(point_matrix, args)
 
 # necessary for some reason lol
 if __name__ == "__main__":
     # execute only if run as a script
     main()
+
+
