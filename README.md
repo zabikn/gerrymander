@@ -8,7 +8,7 @@ In project directory...
 
 **usage**: gerry.py [-h] [-region REGION] [-mapname OUTPUT]
 
-**flags**:
+**flags**: \
   '-h' will display help menu \
   '-region REGION' will display the map for given REGION (takes state name or abbreviation) \
   '-mapname OUTPUT' will eventually be used to name the generated map/pdf
