@@ -1,10 +1,26 @@
 # gerrymander
 
-All of the code I wrote exists in main.py.
+---------------------------------------------------------------
+
+### Usage
+
+In project directory...
+
+**usage**: gerry.py [-h] [-region REGION] [-mapname OUTPUT]
+
+**flags**:
+  '-h' will display help menu \
+  '-region REGION' will display the map for given REGION (takes state name or abbreviation) \
+  '-mapname OUTPUT' will eventually be used to name the generated map/pdf
+
+---------------------------------------------------------------
+
+### Here is how my file structure looked in pycharm when I had all of the files stored locally (Files in bold are already available in the repo):
+
+All of the code I wrote exists in gerry.py.
 I had some issues with uploading the shapefiles since github said they were too big.
 I managed to download the state borders shapefile as well as a CSV with the coordinate ranges of each state.
 
-### Here is how my file structure looked in pycharm when I had all of the files stored locally (Files in bold are already available in the repo):
 ---------------------------------------------------------------
 **main.py**
 
@@ -30,11 +46,12 @@ https://www.arcgis.com/home/item.html?id=8206e517c2264bb39b4a0780462d5be1
 the above link didnt work for me, the link below did  
 https://hub.arcgis.com/datasets/esri::usa-rivers-and-streams
   
+---------------------------------------------------------------
 
-
-## Other Notes
+### Other Notes
  I am skeptical of using the US rivers data file as it is very large and might include too many small streams so currently this is commented out and only state borders are being used.
  
  pip install PyShp
+ pip install argparse
 
-
+---------------------------------------------------------------
