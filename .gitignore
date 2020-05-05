@@ -1,6 +1,19 @@
 data/*
 rivers/*
-# state_shapes/*
+state_shapes/*
+
 build/*
 __pycache__/*
 dist/*
+
+.idea/.gitignore
+.idea/gerrymander.iml
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+
+.gitignore
+venv/
+
+
