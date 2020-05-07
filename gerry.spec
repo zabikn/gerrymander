@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['gerry.py'],
-             pathex=['C:\\Users\\samgo\\Documents\\dev\\gerrymander'],
+             pathex=['E:\\Documents\\School\\Spring2020\\CMSC447\\gerry3'],
              binaries=[],
              datas=[],
              hiddenimports=[],
