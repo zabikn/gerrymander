@@ -3,6 +3,8 @@
 # Python Standard Library Modules
 import csv
 import argparse
+import warnings
+warnings.filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
 import matplotlib.pyplot as plt
 import shapefile
 
