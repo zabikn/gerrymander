@@ -149,6 +149,7 @@ def drawDistricts():
         y = [i[1] for i in rec.shape.points[:]]
 
         # draw with whiteborders
+        #other good colors 'lime'
         plt.plot(x, y, 'w', linewidth=0.2)
 
         #fill district with grayscale value
@@ -189,7 +190,11 @@ def drawMap(args):
         ymin, ymax = dimensions[1]
 
         #this value will eventually be used to name pdf file
-        plt.title(args.output)
+
+
+        fig = plt.figure(0)
+        fig.canvas.set_window_title(args.output)
+        plt.title('GerryMandering of US Congressional Districts')
         # add and subtract 1 to each direction to give a little buffer around the ranges we are looking at
         plt.xlim(round(xmin - 1), round(xmax + 1))
         plt.ylim(round(ymin - 1), round(ymax + 1))
@@ -226,8 +231,8 @@ def main():
         description="Generate pdf map displaying different levels of gerrymandering in US congressional districts")
     region_string = "(Optional) The region to be represented in the map. Can be state name or abbreviation"
     parser.add_argument("-region", help=region_string, dest="region", type=str, required=False)
-    output_string = "(Optional) The name of the map pdf file to be created. Default is MyMap.pdf"
-    parser.add_argument("-mapname", help=output_string, dest="output", type=str, default="MyMap.pdf")
+    output_string = "(Optional) The name of the map pdf file to be created. Default is MyMap"
+    parser.add_argument("-mapname", help=output_string, dest="output", type=str, default="MyMap")
     parser.set_defaults()
     args = parser.parse_args()
     # logic
