@@ -4,6 +4,8 @@
 import csv
 from shapely.geometry import Polygon
 import argparse
+import warnings
+warnings.filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
 import matplotlib.pyplot as plt
 import shapefile
 
